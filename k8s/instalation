@@ -1,0 +1,3 @@
+# Install with kubeadm
+
+link to install k8s with [kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
