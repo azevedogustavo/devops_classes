@@ -1,52 +1,39 @@
-    1  sudo tee /etc/modules-load.d/containerd.conf <<EOF
-    2  overlay
-    3  br_netfilter
-    4  EOF
-    5  sudo modprobe overlay
-    6  sudo modprobe br_netfilter
-    7  sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
-    8  net.bridge.bridge-nf-call-ip6tables = 1
-    9  net.bridge.bridge-nf-call-iptables = 1
-   10  net.ipv4.ip_forward = 1
-   11  EOF
-   12  sudo sysctl --system
-   13  sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-   14  sudo apt update
-   15  sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-   16  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
-   17  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-   18  sudo apt update
-   19  sudo apt install -y containerd.io
-   20  containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
-   21  sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-   22  sudo systemctl restart containerd
-   23  sudo systemctl enable containerd
-   24  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg
-   25  sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-   26  sudo apt update
-   27  sudo apt install -y kubelet kubeadm kubectl
-   28  sudo kubeadm init --control-plane-endpoint=ubuntu-jammy
-   29  mkdir -p $HOME/.kube
-   30  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-   31  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-   32  kubectl get pods
-   33  kubectl get all -A
-   34  kubectl get all -A --watch
-   35  kubectl get all -n kube-system --watch
-   36  kubectl get pods -n kube-system --watch
-   37  kubectl get all -A --watch
-   38  kubectl get all -A
-   39  alias k=kubectl
-   40  complete -o default -F __start_kubectl k
-   41  source <(kubectl completion bash) # configuração de autocomplete no bash do shell atual, o pacote bash-completion precisa ter sido instalado primeiro.
-   42  echo "source <(kubectl completion bash)" >> ~/.bashrc 
-   43  alias k=kubectl
-   44  complete -o default -F __start_kubectl k
-   45  k get pods
-   46  k logs -n kube-system coredns-5dd5756b68-5tmdk 
-   47  k logs -n kube-system coredns-5dd5756b68-5tmdk -f
-   48  k get all -A
-   49  wget https://docs.projectcalico.org/manifests/calico.yaml
-   50  ls
-   51  k apply -f calico.yaml 
-   52  k get all -A
+sudo tee /etc/modules-load.d/containerd.conf <<EOF \
+overlay \
+br_netfilter \
+EOF
+sudo modprobe overlay
+sudo modprobe br_netfilter
+sudo tee /etc/sysctl.d/kubernetes.conf <<EOF \
+net.bridge.bridge-nf-call-ip6tables = 1 \
+net.bridge.bridge-nf-call-iptables = 1 \
+net.ipv4.ip_forward = 1 \
+EOF
+sudo sysctl --system
+sudo apt update
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y containerd.io
+containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+sudo systemctl restart containerd
+sudo systemctl enable containerd
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg
+sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+sudo kubeadm init --control-plane-endpoint=ubuntu-jammy
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+alias k=kubectl
+complete -o default -F __start_kubectl k
+source <(kubectl completion bash) # configuração de autocomplete no bash do shell atual, o pacote bash-completion precisa ter sido instalado primeiro.
+echo "source <(kubectl completion bash)" >> ~/.bashrc 
+alias k=kubectl
+complete -o default -F __start_kubectl k
+wget https://docs.projectcalico.org/manifests/calico.yaml
+k apply -f calico.yaml 
+k get all -A
