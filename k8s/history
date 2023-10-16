@@ -37,3 +37,4 @@ complete -o default -F __start_kubectl k
 wget https://docs.projectcalico.org/manifests/calico.yaml
 k apply -f calico.yaml 
 k get all -A
+k taint node ubuntu-jammy node-role.kubernetes.io/control-plane:NoSchedule-
